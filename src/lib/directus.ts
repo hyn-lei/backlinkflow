@@ -10,7 +10,7 @@ export interface Platform {
   domain_authority: number;
   cost_type: 'free' | 'paid' | 'freemium';
   status: 'published' | 'pending_review' | 'rejected';
-  categories: CategoryRelation[];
+  categories: CategoryRelation[] | null;
   date_created: string;
   user_created: string | null;
 }
@@ -22,8 +22,8 @@ export interface Category {
 }
 
 export interface CategoryRelation {
-  id: string;
-  platforms_id: string;
+  id?: string;
+  platforms_id?: string;
   categories_id: string | Category;
 }
 
