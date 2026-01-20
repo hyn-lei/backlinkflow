@@ -83,9 +83,13 @@ export async function GET(request: NextRequest) {
             return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL}/sign-in?error=user_creation_failed`));
         }
 
-        // Update last_login
+        // Update last_login and ensure auth provider info is current
         await directus().request(
-            updateItem('users', user.id, { last_login: new Date().toISOString() })
+            updateItem('users', user.id, {
+                last_login: new Date().toISOString(),
+                auth_provider: 'google',
+                provider_id: googleUser.id,
+            })
         );
 
         // 4. Create session

@@ -1,0 +1,30 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gradient background -->
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E40AF"/>
+      <stop offset="100%" style="stop-color:#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="flowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#60A5FA"/>
+      <stop offset="100%" style="stop-color:#A78BFA"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="32" height="32" rx="8" fill="url(#bgGrad)"/>
+
+  <!-- Flowing infinity/link symbol -->
+  <path d="M7 16C7 12.5 9.5 10 13 10C15.5 10 17 11.5 19 13.5C21 11.5 22.5 10 25 10"
+        stroke="white" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.3"/>
+  <path d="M25 16C25 19.5 22.5 22 19 22C16.5 22 15 20.5 13 18.5C11 20.5 9.5 22 7 22"
+        stroke="white" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.3"/>
+
+  <!-- Main flowing path -->
+  <path d="M6 16C6 12 9 9 13 9C16 9 17.5 11 20 14C22.5 11 24 9 27 9"
+        stroke="url(#flowGrad)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <path d="M27 16C27 20 24 23 20 23C17 23 15.5 21 13 18C10.5 21 9 23 6 23"
+        stroke="url(#flowGrad)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+
+  <!-- Center connection dot -->
+  <circle cx="16" cy="16" r="2.5" fill="white"/>
+</svg>
