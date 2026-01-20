@@ -20,7 +20,7 @@
 **Step 1: Create Next.js app**
 
 ```bash
-cd /Users/lixuan/code/backflow.app
+cd /Users/lixuan/code/backlinkflow
 npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias "@/*" --turbopack
 ```
 
