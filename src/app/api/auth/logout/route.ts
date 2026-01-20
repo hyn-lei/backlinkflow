@@ -13,9 +13,5 @@ export async function POST() {
     path: '/',
   });
 
-  // Also clear potential stale cookies from callback paths
-  cookieStore.set('session', '', { maxAge: 0, path: '/api/auth/callback/google' });
-  cookieStore.set('session', '', { maxAge: 0, path: '/api/auth/callback/github' });
-
   return NextResponse.json({ success: true });
 }
