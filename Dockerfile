@@ -28,7 +28,7 @@ ENV DIRECTUS_URL=https://directus-backlinkflow.aimazing.site
 ENV DIRECTUS_TOKEN=RguUCCYA6fYah3rc_2wNQVMd8Zr7G1AA
 #ENV POSTGRES_URL="postgres://postgres:postRy78XT@192.210.248.10:5432/social_insights"
 #ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuY3ZpbnRlcnZ1LmNvbSQ
-#ENV NEXT_PUBLIC_API_URL=https://api.cvintervu.com
+ENV NEXT_PUBLIC_APP_URL=https://backlinkflow.app
 
 RUN npm run build
 
