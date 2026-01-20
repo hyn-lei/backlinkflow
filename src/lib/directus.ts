@@ -79,3 +79,36 @@ export const getDirectusFileUrl = (fileId: string | null) => {
   if (!fileId) return null;
   return `${getDirectusUrl()}/assets/${fileId}`;
 };
+
+export async function uploadAvatarToDirectus(imageUrl: string, fileName: string): Promise<string | null> {
+  try {
+    const imageResponse = await fetch(imageUrl);
+    if (!imageResponse.ok) return null;
+
+    const contentType = imageResponse.headers.get('content-type') || 'image/jpeg';
+    const ext = contentType.split('/')[1]?.split(';')[0] || 'jpg';
+    const imageBlob = await imageResponse.blob();
+
+    const formData = new FormData();
+    formData.append('file', imageBlob, `${fileName}.${ext}`);
+
+    const uploadResponse = await fetch(`${getDirectusUrl()}/files`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getDirectusToken()}`,
+      },
+      body: formData,
+    });
+
+    if (!uploadResponse.ok) {
+      console.error('Failed to upload avatar to Directus');
+      return null;
+    }
+
+    const result = await uploadResponse.json();
+    return result.data?.id || null;
+  } catch (error) {
+    console.error('Error uploading avatar:', error);
+    return null;
+  }
+}

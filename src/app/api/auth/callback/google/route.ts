@@ -1,45 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { directus, User, getDirectusFileUrl } from '@/lib/directus';
+import { directus, User, getDirectusFileUrl, uploadAvatarToDirectus } from '@/lib/directus';
 import { readItems, createItem, updateItem } from '@directus/sdk';
 import { createSession } from '@/lib/auth';
-
-// Download image and upload to Directus
-async function uploadAvatarToDirectus(imageUrl: string, fileName: string): Promise<string | null> {
-    try {
-        // Download the image
-        const imageResponse = await fetch(imageUrl);
-        if (!imageResponse.ok) return null;
-
-        const contentType = imageResponse.headers.get('content-type') || 'image/jpeg';
-        const ext = contentType.split('/')[1]?.split(';')[0] || 'jpg';
-        const imageBlob = await imageResponse.blob();
-
-        // Create FormData for Directus upload
-        const formData = new FormData();
-        formData.append('file', imageBlob, `${fileName}.${ext}`);
-
-        // Upload to Directus
-        const uploadResponse = await fetch(`${process.env.DIRECTUS_URL}/files`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${process.env.DIRECTUS_TOKEN}`,
-            },
-            body: formData,
-        });
-
-        if (!uploadResponse.ok) {
-            console.error('Failed to upload avatar to Directus');
-            return null;
-        }
-
-        const result = await uploadResponse.json();
-        return result.data?.id || null;
-    } catch (error) {
-        console.error('Error uploading avatar:', error);
-        return null;
-    }
-}
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
@@ -47,7 +10,7 @@ export async function GET(request: NextRequest) {
     const state = searchParams.get('state') || '/';
 
     if (!code) {
-        return NextResponse.redirect(new URL('/sign-in?error=no_code', request.url));
+        return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL}/sign-in?error=no_code`));
     }
 
     try {
@@ -68,7 +31,7 @@ export async function GET(request: NextRequest) {
 
         if (!tokenResponse.ok) {
             console.error('Google token exchange failed:', tokens);
-            return NextResponse.redirect(new URL('/sign-in?error=token_exchange_failed', request.url));
+            return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL}/sign-in?error=token_exchange_failed`));
         }
 
         // 2. Get user info
@@ -80,7 +43,7 @@ export async function GET(request: NextRequest) {
 
         if (!userResponse.ok) {
             console.error('Google user info failed:', googleUser);
-            return NextResponse.redirect(new URL('/sign-in?error=user_info_failed', request.url));
+            return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL}/sign-in?error=user_info_failed`));
         }
 
         // 3. Find or create user in Directus
@@ -117,7 +80,7 @@ export async function GET(request: NextRequest) {
         }
 
         if (!user) {
-            return NextResponse.redirect(new URL('/sign-in?error=user_creation_failed', request.url));
+            return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL}/sign-in?error=user_creation_failed`));
         }
 
         // Update last_login
@@ -135,10 +98,11 @@ export async function GET(request: NextRequest) {
             maxAge: 60 * 60 * 24 * 7, // 7 days
         });
 
-        return NextResponse.redirect(new URL(state.startsWith('http') ? state : new URL(state, request.url).toString()));
+        const validState = state.startsWith('http') ? state : `${process.env.NEXT_PUBLIC_APP_URL}${state}`;
+        return NextResponse.redirect(new URL(validState));
 
     } catch (error) {
         console.error('Google auth error:', error);
-        return NextResponse.redirect(new URL('/sign-in?error=auth_failed', request.url));
+        return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL}/sign-in?error=auth_failed`));
     }
 }
