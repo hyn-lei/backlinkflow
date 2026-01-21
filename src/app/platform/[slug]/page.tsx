@@ -32,6 +32,22 @@ async function getPlatform(slug: string): Promise<Platform | null> {
     }
 }
 
+export async function generateStaticParams() {
+    try {
+        const platforms = await directus().request(
+            readItems('platforms', {
+                filter: { status: { _eq: 'published' } },
+                fields: ['slug'],
+            })
+        );
+        return platforms.map((platform) => ({
+            slug: platform.slug,
+        }));
+    } catch {
+        return [];
+    }
+}
+
 export async function generateMetadata({ params }: PageProps) {
     const { slug } = await params;
     const platform = await getPlatform(slug);
