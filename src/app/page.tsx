@@ -31,3 +31,5 @@ export default async function HomePage() {
 
   return <DirectoryClient platforms={platforms} categories={categories} />;
 }
+
+export const revalidate = 60;
