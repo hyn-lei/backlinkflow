@@ -14,6 +14,7 @@ export default function SubmitPage() {
   const [name, setName] = useState('');
   const [websiteUrl, setWebsiteUrl] = useState('');
   const [description, setDescription] = useState('');
+  const [costType, setCostType] = useState<'free' | 'paid' | 'freemium'>('free');
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -35,6 +36,7 @@ export default function SubmitPage() {
           name: name.trim(),
           website_url: websiteUrl.trim(),
           description: description.trim(),
+          cost_type: costType,
         }),
       });
 
@@ -122,6 +124,19 @@ export default function SubmitPage() {
                       required
                     />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Cost Type</label>
+                  <select
+                    value={costType}
+                    onChange={(e) => setCostType(e.target.value as 'free' | 'paid' | 'freemium')}
+                    className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <option value="free">Free</option>
+                    <option value="paid">Paid</option>
+                    <option value="freemium">Freemium</option>
+                  </select>
                 </div>
 
                 <div className="space-y-2">

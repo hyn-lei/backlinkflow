@@ -1,11 +1,12 @@
 import { createDirectus, rest, staticToken, RestClient, DirectusClient, StaticTokenClient } from '@directus/sdk';
 
 export interface Platform {
-  id: string;
+  id: number;
   name: string;
   slug: string;
   website_url: string;
   description: string;
+  detail: string | null;
   logo: string | null;
   domain_authority: number;
   cost_type: 'free' | 'paid' | 'freemium';
@@ -16,14 +17,14 @@ export interface Platform {
 }
 
 export interface Category {
-  id: string;
+  id: string; // Categories retained UUID
   name: string;
   slug: string;
 }
 
 export interface CategoryRelation {
-  id?: string;
-  platforms_id?: string;
+  id?: number;
+  platforms_id?: number;
   categories_id: string | Category;
 }
 
@@ -42,7 +43,7 @@ export interface User {
 export interface UserBoard {
   id: string;
   user: string | User;
-  platform: string | Platform;
+  platform: number | Platform;
   status: 'todo' | 'in_progress' | 'submitted' | 'live';
   backlink_url: string | null;
   notes: string | null;

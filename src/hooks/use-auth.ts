@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/auth-store';
 import { toast } from 'sonner';
@@ -8,8 +8,13 @@ import { toast } from 'sonner';
 export function useAuth() {
   const { user, isLoading, setUser, setLoading } = useAuthStore();
   const router = useRouter();
+  const hasFetched = useRef(false);
 
   useEffect(() => {
+    // Skip if already fetched or user is loaded
+    if (hasFetched.current || user) return;
+    hasFetched.current = true;
+
     async function loadUser() {
       try {
         const res = await fetch('/api/auth/me');
@@ -27,7 +32,7 @@ export function useAuth() {
     }
 
     loadUser();
-  }, [setUser, setLoading]);
+  }, [setUser, setLoading, user]);
 
   const logout = async () => {
     try {

@@ -33,6 +33,7 @@ export async function POST(request: NextRequest) {
         name: name || email.split('@')[0],
         password_hash,
         auth_provider: 'email',
+        last_login: new Date().toISOString(),
       })
     );
 

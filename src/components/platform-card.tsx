@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { ExternalLink, Plus, Check } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,12 +19,14 @@ export function PlatformCard({ platform }: PlatformCardProps) {
   const { user } = useAuth();
   const router = useRouter();
   const { items, addToBoard, isAdding } = useBoardStore();
-  
-  const isAdded = items.some((item) => 
-    typeof item.platform === 'string' 
-      ? item.platform === platform.id 
-      : item.platform.id === platform.id
-  );
+
+  const isAdded = items.some((item) => {
+    if (!item.platform) return false;
+    if (typeof item.platform === 'number') {
+      return item.platform === platform.id;
+    }
+    return item.platform.id === platform.id;
+  });
 
   const getDaBadgeVariant = (da: number) => {
     if (da >= 70) return 'success';
@@ -64,7 +67,9 @@ export function PlatformCard({ platform }: PlatformCardProps) {
               </div>
             )}
             <div>
-              <h3 className="font-semibold text-foreground">{platform.name}</h3>
+              <Link href={`/platform/${platform.slug}`}>
+                <h3 className="font-semibold text-foreground hover:text-primary transition-colors cursor-pointer">{platform.name}</h3>
+              </Link>
               <a
                 href={platform.website_url}
                 target="_blank"

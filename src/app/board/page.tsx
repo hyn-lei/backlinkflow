@@ -21,10 +21,11 @@ export default function BoardPage() {
   }, [authLoading, user, router]);
 
   useEffect(() => {
-    if (user) {
+    if (user?.id) {
       fetchBoard(user.id);
     }
-  }, [user, fetchBoard]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   if (authLoading || !user) {
     return (
@@ -65,21 +66,19 @@ export default function BoardPage() {
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setViewMode('list')}
-              className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                viewMode === 'list'
+              className={`px-3 py-1 text-sm rounded-md transition-colors ${viewMode === 'list'
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted text-muted-foreground hover:bg-muted/80'
-              }`}
+                }`}
             >
               List
             </button>
             <button
               onClick={() => setViewMode('board')}
-              className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                viewMode === 'board'
+              className={`px-3 py-1 text-sm rounded-md transition-colors ${viewMode === 'board'
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted text-muted-foreground hover:bg-muted/80'
-              }`}
+                }`}
             >
               Board
             </button>

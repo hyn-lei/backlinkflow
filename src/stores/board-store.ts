@@ -7,7 +7,7 @@ interface BoardState {
   isAdding: boolean;
   setItems: (items: UserBoard[]) => void;
   setLoading: (loading: boolean) => void;
-  addToBoard: (platformId: string, userId: string) => Promise<void>;
+  addToBoard: (platformId: number, userId: string) => Promise<void>;
   removeFromBoard: (itemId: string) => Promise<void>;
   updateStatus: (itemId: string, status: UserBoard['status']) => Promise<void>;
   updateNotes: (itemId: string, notes: string) => Promise<void>;
@@ -38,7 +38,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
     }
   },
 
-  addToBoard: async (platformId: string, userId: string) => {
+  addToBoard: async (platformId: number, userId: string) => {
     set({ isAdding: true });
 
     const tempId = `temp-${Date.now()}`;
