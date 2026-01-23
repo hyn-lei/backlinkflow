@@ -184,7 +184,7 @@ export default async function BlogPostPage({ params }: PageProps) {
               />
             )}
             {post.content ? (
-              <article className="prose prose-slate max-w-none">
+              <article className="prose prose-slate dark:prose-invert max-w-none">
                 <ReactMarkdown>{post.content}</ReactMarkdown>
               </article>
             ) : (
