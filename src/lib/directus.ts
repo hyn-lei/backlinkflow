@@ -76,6 +76,31 @@ export interface ProjectTracking {
   live_backlink_url: string | null;
 }
 
+export interface Author {
+  name: string;
+  title?: string | null;
+  avatar?: string | null;
+}
+
+export interface Post {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content: string;
+  cover_image: string | null;
+  date_created: string;
+  reading_time: number | null;
+  tags: string | string[] | null;
+  status: 'published' | 'draft' | 'archived';
+  seo: {
+    title?: string | null;
+    meta_description?: string | null;
+    og_image?: string | null;
+  } | null;
+  author: Author | string | null;
+}
+
 export interface Schema {
   platforms: Platform[];
   categories: Category[];
@@ -85,6 +110,8 @@ export interface Schema {
   projects: Project[];
   projects_categories: ProjectCategoryRelation[];
   project_tracking: ProjectTracking[];
+  posts: Post[];
+  authors: Author[]; // Optional: if 'author' is a real collection, adding it here helps too, though referencing it in Post is key.
 }
 
 const getDirectusUrl = () => process.env.DIRECTUS_URL || 'http://localhost:8055';

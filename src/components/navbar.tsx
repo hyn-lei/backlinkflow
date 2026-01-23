@@ -16,6 +16,7 @@ export function Navbar() {
 
   const navLinks = [
     { href: '/platforms', label: 'Platforms', icon: Link2 },
+    { href: '/blog', label: 'Blog', icon: Link2 },
     { href: '/board', label: 'My Board', icon: LayoutDashboard, protected: true },
   ];
 
