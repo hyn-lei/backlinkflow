@@ -57,8 +57,22 @@ export async function generateMetadata({ params }: PageProps) {
     }
 
     return {
-        title: `${platform.name} - BacklinkFlow`,
-        description: platform.description || `Learn how to build backlinks on ${platform.name}`,
+        title: platform.name,
+        description: platform.description || `Learn how to build backlinks on ${platform.name}.`,
+        alternates: {
+            canonical: `/platform/${platform.slug}`,
+        },
+        openGraph: {
+            title: platform.name,
+            description: platform.description || `Learn how to build backlinks on ${platform.name}.`,
+            url: `/platform/${platform.slug}`,
+            type: 'article',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: platform.name,
+            description: platform.description || `Learn how to build backlinks on ${platform.name}.`,
+        },
     };
 }
 
@@ -89,11 +103,11 @@ export default async function PlatformPage({ params }: PageProps) {
                 <section className="border-b border-border bg-gradient-to-b from-background to-muted/30">
                     <div className="container py-8 md:py-12">
                         <Link
-                            href="/"
+                            href="/platforms"
                             className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6 transition-colors"
                         >
                             <ArrowLeft className="h-4 w-4 mr-2" />
-                            Back to Directory
+                            Back to Platforms
                         </Link>
 
                         <div className="flex flex-col md:flex-row gap-6 items-start">

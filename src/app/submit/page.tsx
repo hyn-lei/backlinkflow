@@ -67,8 +67,8 @@ export default function SubmitPage() {
               Your platform has been submitted for review. We'll add it to the
               directory once it's approved.
             </p>
-            <Link href="/">
-              <Button>Back to Directory</Button>
+            <Link href="/platforms">
+              <Button>Back to Platforms</Button>
             </Link>
           </div>
         </main>
@@ -85,7 +85,7 @@ export default function SubmitPage() {
         <div className="max-w-lg mx-auto">
           <Card>
             <CardHeader className="text-center">
-              <Link href="/" className="flex items-center justify-center space-x-2 mb-4">
+              <Link href="/platforms" className="flex items-center justify-center space-x-2 mb-4">
                 <Layers className="h-8 w-8" />
                 <span className="text-2xl font-bold">BacklinkFlow</span>
               </Link>

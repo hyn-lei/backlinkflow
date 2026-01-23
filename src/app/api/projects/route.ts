@@ -30,7 +30,7 @@ export async function GET() {
           'website_url',
           'date_created',
           'date_updated',
-          { tags: [{ categories_id: ['id', 'slug', 'name'] }] },
+          { categories: [{ categories_id: ['id', 'slug', 'name'] }] },
         ],
         sort: ['-date_created'],
       })
@@ -50,18 +50,24 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { name, website_url, tagIds, prefillGeneral } = await request.json();
+    const { name, website_url, categoryIds, prefillGeneral } = await request.json();
 
     if (!name) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 });
     }
+
+    const categoriesPayload = Array.isArray(categoryIds)
+      ? categoryIds.map((categoryId: string) => ({
+        categories_id: categoryId,
+      }))
+      : undefined;
 
     const project = await directus().request(
       createItem('projects', {
         user_id: userId,
         name,
         website_url: website_url || null,
-        tags: Array.isArray(tagIds) ? tagIds : [],
+        categories: categoriesPayload as any,
       })
     );
 
@@ -111,7 +117,7 @@ export async function POST(request: NextRequest) {
           'website_url',
           'date_created',
           'date_updated',
-          { tags: [{ categories_id: ['id', 'slug', 'name'] }] },
+          { categories: [{ categories_id: ['id', 'slug', 'name'] }] },
         ],
         limit: 1,
       })

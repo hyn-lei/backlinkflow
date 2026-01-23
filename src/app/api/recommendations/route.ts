@@ -8,6 +8,10 @@ const platformFields = [
   'id',
   'name',
   'slug',
+  'website_url',
+  'description',
+  'logo',
+  'cost_type',
   'domain_authority',
   { categories: [{ categories_id: ['id', 'slug', 'name'] }] },
 ] as const;
@@ -18,6 +22,10 @@ type PlatformItem = {
   id: number;
   name: string;
   slug: string;
+  website_url: string;
+  description: string | null;
+  logo: string | null;
+  cost_type: 'free' | 'paid' | 'freemium';
   domain_authority: number;
   categories?: CategoryRef[] | null;
 };
@@ -53,7 +61,7 @@ export async function GET(request: NextRequest) {
     const projects = await directus().request(
       readItems('projects', {
         filter: { id: { _eq: projectId } },
-        fields: ['id', { tags: [{ categories_id: ['id', 'slug', 'name'] }] }],
+        fields: ['id', { categories: [{ categories_id: ['id', 'slug', 'name'] }] }],
         limit: 1,
       })
     );
@@ -62,8 +70,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
 
-    const project = projects[0] as { tags?: CategoryRef[] | null };
-    const tagSlugs = (project.tags ?? [])
+    const project = projects[0] as { categories?: CategoryRef[] | null };
+    const tagSlugs = (project.categories ?? [])
       .map((rel) => (typeof rel.categories_id === 'string' ? null : rel.categories_id?.slug))
       .filter((slug): slug is string => Boolean(slug));
 

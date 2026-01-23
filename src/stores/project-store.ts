@@ -4,7 +4,7 @@ import { Project, Category } from '@/lib/directus';
 interface CreateProjectInput {
   name: string;
   website_url?: string | null;
-  tagIds: string[];
+  categoryIds: string[];
   prefillGeneral?: boolean;
 }
 
@@ -12,6 +12,7 @@ interface ProjectState {
   projects: Project[];
   currentProjectId: string | null;
   isLoading: boolean;
+  hasLoaded: boolean;
   isCreating: boolean;
   categories: Category[];
   isLoadingCategories: boolean;
@@ -37,11 +38,15 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   projects: [],
   currentProjectId: null,
   isLoading: false,
+  hasLoaded: false,
   isCreating: false,
   categories: [],
   isLoadingCategories: false,
 
   fetchProjects: async () => {
+    const state = get();
+    if (state.hasLoaded || state.isLoading) return;
+
     set({ isLoading: true });
     try {
       const res = await fetch('/api/projects');
@@ -54,9 +59,12 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
           ? storedId
           : projects[0]?.id || null;
 
-      set({ projects, currentProjectId: nextId });
+      set({ projects, currentProjectId: nextId, hasLoaded: true });
     } catch (error) {
       console.error('Failed to fetch projects:', error);
+      // Ensure we don't get stuck in loading state, but maybe we want to retry later?
+      // For now, setting hasLoaded to true prevents infinite retries on the same page load
+      set({ hasLoaded: true });
     } finally {
       set({ isLoading: false });
     }
@@ -91,7 +99,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         body: JSON.stringify({
           name: input.name,
           website_url: input.website_url || null,
-          tagIds: input.tagIds,
+          categoryIds: input.categoryIds,
           prefillGeneral: input.prefillGeneral !== false,
         }),
       });

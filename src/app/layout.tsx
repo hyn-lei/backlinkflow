@@ -16,9 +16,15 @@ const manrope = Manrope({
   display: 'swap',
 });
 
+const siteUrl = process.env.SITE_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+
 export const metadata: Metadata = {
-  title: 'BacklinkFlow - SEO & Backlink Management',
-  description: 'Manage your SEO and backlink strategy efficiently.',
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: 'BacklinkFlow - Growth Ops for Distribution',
+    template: '%s | BacklinkFlow',
+  },
+  description: 'Plan distribution, discover platforms, and track backlink submissions by project.',
   icons: {
     icon: [
       { url: '/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
@@ -28,6 +34,18 @@ export const metadata: Metadata = {
     apple: { url: '/apple-touch-icon.png', sizes: '180x180' },
   },
   manifest: '/site.webmanifest',
+  openGraph: {
+    title: 'BacklinkFlow - Growth Ops for Distribution',
+    description: 'Plan distribution, discover platforms, and track backlink submissions by project.',
+    url: '/',
+    siteName: 'BacklinkFlow',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'BacklinkFlow - Growth Ops for Distribution',
+    description: 'Plan distribution, discover platforms, and track backlink submissions by project.',
+  },
 };
 
 export default function RootLayout({

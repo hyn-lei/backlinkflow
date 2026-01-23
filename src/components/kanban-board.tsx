@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -11,6 +11,7 @@ import {
   useSensors,
   DragStartEvent,
   DragEndEvent,
+  useDroppable,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -18,6 +19,7 @@ import {
 } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import Link from 'next/link';
 import { ExternalLink, Trash2, GripVertical } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -80,7 +82,9 @@ export function KanbanBoard({ items, viewMode }: KanbanBoardProps) {
     if (!activeItem) return;
 
     const overId = over.id as string;
-    const newStatus = COLUMNS.find((col) => col.id === overId)?.id;
+    const columnMatch = COLUMNS.find((col) => col.id === overId);
+    const overItem = items.find((item) => item.id === overId);
+    const newStatus = columnMatch?.id ?? overItem?.status;
 
     if (newStatus && newStatus !== activeItem.status) {
       await performStatusChange(activeItem, newStatus);
@@ -100,9 +104,9 @@ export function KanbanBoard({ items, viewMode }: KanbanBoardProps) {
 
   if (viewMode === 'list') {
     return (
-      <div className="space-y-4">
+      <div className="space-y-3">
         {items.map((item) => (
-          <BoardItemCard
+          <ListRow
             key={item.id}
             item={item}
             onRemove={handleRemove}
@@ -182,15 +186,16 @@ function KanbanColumn({
   onNotesChange,
   onStatusChange,
 }: KanbanColumnProps) {
-  const { setNodeRef } = useSortable({
+  const { setNodeRef, isOver } = useDroppable({
     id: column.id,
-    data: { type: 'column' },
   });
 
   return (
     <div
       ref={setNodeRef}
-      className="bg-muted/50 rounded-lg p-4 min-h-[400px]"
+      className={`bg-muted/50 rounded-lg p-4 min-h-[400px] transition-colors ${
+        isOver ? 'ring-2 ring-primary/40 bg-primary/5' : ''
+      }`}
     >
       <h3 className="font-semibold mb-4 flex items-center justify-between">
         {column.title}
@@ -287,6 +292,14 @@ function BoardItemCard({
   const platform =
     typeof item.platform_id === 'number' ? null : (item.platform_id as Platform);
 
+  useEffect(() => {
+    setNotes(item.notes || '');
+  }, [item.notes]);
+
+  useEffect(() => {
+    setBacklinkUrlLocal(item.live_backlink_url || '');
+  }, [item.live_backlink_url]);
+
   const handleNotesBlur = () => {
     setEditingNotes(false);
     if (notes !== item.notes) {
@@ -315,9 +328,15 @@ function BoardItemCard({
               </button>
             )}
             <div>
-              <h4 className="font-medium text-sm">
-                {platform?.name || 'Unknown Platform'}
-              </h4>
+              {platform?.slug ? (
+                <Link href={`/platform/${platform.slug}`} className="font-medium text-sm hover:text-primary">
+                  {platform.name}
+                </Link>
+              ) : (
+                <h4 className="font-medium text-sm">
+                  {platform?.name || 'Unknown Platform'}
+                </h4>
+              )}
               {platform?.website_url && (
                 <a
                   href={platform.website_url}
@@ -387,6 +406,137 @@ function BoardItemCard({
             {notes || 'Add notes...'}
           </button>
         )}
+      </CardContent>
+    </Card>
+  );
+}
+
+interface ListRowProps {
+  item: ProjectTracking;
+  onRemove: (id: string) => void;
+  onBacklinkChange: (id: string, url: string) => void;
+  onNotesChange: (id: string, notes: string) => void;
+  onStatusChange: (id: string, status: ProjectTracking['status']) => void;
+}
+
+function ListRow({
+  item,
+  onRemove,
+  onBacklinkChange,
+  onNotesChange,
+  onStatusChange,
+}: ListRowProps) {
+  const [notes, setNotes] = useState(item.notes || '');
+  const [backlinkUrl, setBacklinkUrlLocal] = useState(item.live_backlink_url || '');
+
+  const platform =
+    typeof item.platform_id === 'number' ? null : (item.platform_id as Platform);
+
+  useEffect(() => {
+    setNotes(item.notes || '');
+  }, [item.notes]);
+
+  useEffect(() => {
+    setBacklinkUrlLocal(item.live_backlink_url || '');
+  }, [item.live_backlink_url]);
+
+  const handleNotesBlur = () => {
+    if (notes !== item.notes) {
+      onNotesChange(item.id, notes);
+    }
+  };
+
+  const handleBacklinkBlur = () => {
+    if (backlinkUrl !== item.live_backlink_url) {
+      onBacklinkChange(item.id, backlinkUrl);
+    }
+  };
+
+  return (
+    <Card className="border-border/60 bg-background/70">
+      <CardContent className="p-4">
+        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[2fr,1fr,1.2fr,auto] lg:items-center">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              {platform?.slug ? (
+                <Link href={`/platform/${platform.slug}`} className="font-medium hover:text-primary">
+                  {platform.name}
+                </Link>
+              ) : (
+                <h4 className="font-medium">{platform?.name || 'Unknown Platform'}</h4>
+              )}
+              {platform?.cost_type && (
+                <Badge variant={platform.cost_type === 'free' ? 'success' : 'secondary'}>
+                  {platform.cost_type.charAt(0).toUpperCase() + platform.cost_type.slice(1)}
+                </Badge>
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground line-clamp-2">
+              {platform?.description || 'No description available.'}
+            </p>
+            {platform?.website_url && (
+              <a
+                href={platform.website_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center"
+              >
+                Visit <ExternalLink className="h-3 w-3 ml-1" />
+              </a>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs uppercase tracking-wide text-muted-foreground">
+              Status
+            </label>
+            <select
+              value={item.status}
+              onChange={(e) => onStatusChange(item.id, e.target.value as ProjectTracking['status'])}
+              className="w-full text-sm p-2 rounded-md border border-border bg-background"
+            >
+              {COLUMNS.map((col) => (
+                <option key={col.id} value={col.id}>
+                  {col.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs uppercase tracking-wide text-muted-foreground">
+              Notes / Backlink
+            </label>
+            {item.status === 'live' && (
+              <Input
+                placeholder="Live backlink URL..."
+                value={backlinkUrl}
+                onChange={(e) => setBacklinkUrlLocal(e.target.value)}
+                onBlur={handleBacklinkBlur}
+                className="h-9 text-sm"
+              />
+            )}
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              onBlur={handleNotesBlur}
+              placeholder="Add notes..."
+              className="w-full text-sm p-2 rounded-md border border-border bg-background resize-none"
+              rows={2}
+            />
+          </div>
+
+          <div className="flex items-start justify-end">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9"
+              onClick={() => onRemove(item.id)}
+            >
+              <Trash2 className="h-4 w-4 text-muted-foreground" />
+            </Button>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

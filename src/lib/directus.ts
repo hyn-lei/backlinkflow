@@ -62,7 +62,7 @@ export interface Project {
   user_id: string | User;
   name: string;
   website_url: string | null;
-  tags: ProjectCategoryRelation[] | null;
+  categories: ProjectCategoryRelation[] | null;
   date_created: string;
   date_updated: string;
 }
@@ -96,6 +96,7 @@ type Client = DirectusClient<Schema> & StaticTokenClient<Schema> & RestClient<Sc
 let _directus: Client | null = null;
 
 export const directus = (): Client => {
+
   if (!_directus) {
     _directus = createDirectus<Schema>(getDirectusUrl())
       .with(staticToken(getDirectusToken()))

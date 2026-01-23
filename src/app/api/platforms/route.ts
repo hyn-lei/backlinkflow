@@ -2,7 +2,24 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { directus } from '@/lib/directus';
 import { verifySession } from '@/lib/auth';
-import { createItem } from '@directus/sdk';
+import { createItem, readItems } from '@directus/sdk';
+
+export async function GET() {
+  try {
+    const platforms = await directus().request(
+      readItems('platforms', {
+        filter: { status: { _eq: 'published' } },
+        fields: ['*', { categories: [{ categories_id: ['*'] }] }],
+        sort: ['-domain_authority'],
+      })
+    );
+
+    return NextResponse.json({ platforms });
+  } catch (error) {
+    console.error('Failed to fetch platforms:', error);
+    return NextResponse.json({ error: 'Failed to fetch platforms' }, { status: 500 });
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {

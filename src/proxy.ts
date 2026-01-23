@@ -19,7 +19,7 @@ async function verifyToken(token: string) {
     }
 }
 
-export async function middleware(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
     const sessionToken = request.cookies.get('session')?.value;
 
